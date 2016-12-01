@@ -1,0 +1,100 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../../bower_components/app-storage/app-localstorage/app-localstorage-document.html">
+<link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../../bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input-container.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input-error.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+
+
+<link rel="import" href="../shared-styles.html">
+
+<dom-module id="user-management">
+  <template>
+    <style is="custom-style" include="iron-flex"></style>
+    <style is="custom-style" include="shared-styles"></style>
+    <style is="custom-style">
+      :host {
+        display: block;
+
+        padding: 10px;
+      }
+
+      paper-material {
+        background: white;
+        padding: 30px;
+      }
+
+      .save {
+        margin-bottom: 30px;
+      }
+
+      .delete {
+        font-size: 90%;
+        background: red;
+        padding: 2px;
+        color: white;
+      }
+
+      .row {
+        margin-bottom: 10px;
+      }
+
+
+    </style>
+
+    <app-localstorage-document id="users" key="users" data="{{ users }}" log></app-localstorage-document>
+
+    <paper-material elevation="1" class="layout vertical">
+      <h1>Users</h1>
+
+      <!--icons:add-->
+
+      <div class="layout horizontal save">
+        <paper-input id="name" class="flex" label="Name" required min-length="2"></paper-input>
+        <paper-button on-tap="handleAddUserTapped">Add User</paper-button>
+      </div>
+
+      <template is="dom-repeat" items="{{ users }}" id="users-repeat">
+        <div class="layout horizontal row">
+          <paper-checkbox checked="{{ item.isActive }}"></paper-checkbox>
+          <div class="flex">{{ item.name }}</div>
+          <paper-button class="delete" on-tap="handleDeleteTapped">Delete</paper-button>
+        </div>
+      </template>
+
+    </paper-material>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'user-management',
+
+      ready: function () {
+        const storage = this.$$('#users');
+        if (storage.valueIsEmpty()) {
+          this.users = [];
+        }
+      },
+
+      handleAddUserTapped() {
+        const nameEl = this.$$('#name');
+        const name = nameEl.value;
+        this.push('users', { name, isActive: true });
+        nameEl.value = '';
+      },
+
+      handleDeleteTapped(e) {
+        console.log(e.model.item);
+        const index = this.users.indexOf(e.model.item);
+        this.splice('users', index, 1);
+        console.log(this.users);
+      }
+
+    });
+  </script>
+</dom-module>
